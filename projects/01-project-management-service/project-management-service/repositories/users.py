@@ -1,6 +1,8 @@
+from models.projects import Project
 from models.users import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 class UserRepository:
@@ -14,6 +16,14 @@ class UserRepository:
 
     async def get_by_id(self, user_id: int):
         user = await self.session.execute(select(User).where(User.id == user_id))
+        return user.scalar_one_or_none()
+
+    async def get_by_id_with_projects_and_tasks(self, user_id: int):
+        user = await self.session.execute(
+            select(User)
+            .options(selectinload(User.projects).selectinload(Project.tasks))
+            .where(User.id == user_id)
+        )
         return user.scalar_one_or_none()
 
     async def get_by_email(self, email: str):

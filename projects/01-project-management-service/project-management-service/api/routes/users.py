@@ -15,6 +15,7 @@ from schemas.users import (
     UserCreate,
     UserDelete,
     UserRead,
+    UserReadWithProjectsAndTasks,
     UserUpdate,
 )
 from services.users import UserService
@@ -47,6 +48,25 @@ async def get_user(
     service = UserService(session)
     try:
         return await service.get_by_id(user_id)
+    except UserNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+
+@router.get(
+    "/{user_id}/with-projects-and-tasks",
+    response_model=UserReadWithProjectsAndTasks,
+    status_code=status.HTTP_200_OK,
+)
+async def get_user_with_projects_and_tasks(
+    user_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    service = UserService(session)
+    try:
+        return await service.get_by_id_with_projects_and_tasks(user_id)
     except UserNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

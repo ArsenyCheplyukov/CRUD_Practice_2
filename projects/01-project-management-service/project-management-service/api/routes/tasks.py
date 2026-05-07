@@ -14,6 +14,7 @@ from schemas.tasks import (
     TaskDelete,
     TaskRead,
     TaskUpdate,
+    TaskReadWithProject,
 )
 from services.tasks import TaskService
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,6 +46,24 @@ async def get_task(
     service = TaskService(session)
     try:
         return await service.get_by_id(task_id)
+    except TaskNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
+        )
+
+
+@router.get(
+    "/{task_id}/with-project",
+    response_model=TaskReadWithProject,
+    status_code=status.HTTP_200_OK,
+)
+async def get_task_with_project(
+    task_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    service = TaskService(session)
+    try:
+        return await service.get_by_id_with_project(task_id)
     except TaskNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"

@@ -14,6 +14,7 @@ from schemas.projects import (
     ProjectCreate,
     ProjectDelete,
     ProjectRead,
+    ProjectReadWithTasks,
     ProjectUpdate,
 )
 from services.projects import ProjectService
@@ -46,6 +47,25 @@ async def get_project(
     service = ProjectService(session)
     try:
         return await service.get_by_id(project_id)
+    except ProjectNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found",
+        )
+
+
+@router.get(
+    "/{project_id}/with-tasks",
+    response_model=ProjectReadWithTasks,
+    status_code=status.HTTP_200_OK,
+)
+async def get_project_with_tasks(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    service = ProjectService(session)
+    try:
+        return await service.get_by_id_with_tasks(project_id)
     except ProjectNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

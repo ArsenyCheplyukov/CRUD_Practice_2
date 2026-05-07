@@ -34,7 +34,16 @@ class ProjectService:
         return await self.project_repository.get_all()
 
     async def get_by_id(self, project_id: int):
-        return await self.project_repository.get_by_id(project_id)
+        result = await self.project_repository.get_by_id(project_id)
+        if result is None:
+            raise ProjectNotFound()
+        return result
+
+    async def get_by_id_with_tasks(self, project_id: int):
+        result = await self.project_repository.get_by_id_with_tasks(project_id)
+        if result is None:
+            raise ProjectNotFound()
+        return result
 
     async def get_user_projects(self, user_id: int):
         user = await self.user_repository.get_by_id(user_id)

@@ -1,6 +1,7 @@
 from models import Comment, Task
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 
 class TaskRepository:
@@ -13,6 +14,12 @@ class TaskRepository:
 
     async def get_by_id(self, task_id: int):
         task = await self.session.execute(select(Task).where(Task.id == task_id))
+        return task.scalar_one_or_none()
+
+    async def get_by_id_with_project(self, task_id: int):
+        task = await self.session.execute(
+            select(Task).options(joinedload(Task.project)).where(Task.id == task_id)
+        )
         return task.scalar_one_or_none()
 
     async def get_by_title(self, title: str):

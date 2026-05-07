@@ -34,48 +34,39 @@ class UserService:
     async def get_all(self):
         return await self.user_repository.get_all()
 
-    async def get_by_id(
-        self,
-        user_id: int,
-    ):
+    async def get_by_id(self, user_id: int):
         user = await self.user_repository.get_by_id(user_id)
         if not user:
             raise UserNotFound()
         return user
 
-    async def get_by_email(
-        self,
-        email: str,
-    ):
+    async def get_by_id_with_projects_and_tasks(self, user_id: int):
+        user = await self.user_repository.get_by_id_with_projects_and_tasks(user_id)
+        if not user:
+            raise UserNotFound()
+        return user
+
+    async def get_by_email(self, email: str):
         user = await self.user_repository.get_by_email(email)
         if not user:
             raise UserNotFound()
         return user
 
-    async def get_project_users(
-        self,
-        project_id: int,
-    ):
+    async def get_project_users(self, project_id: int):
         project = await self.project_repository.get_by_id(project_id)
         if not project:
             raise ProjectNotFound()
         users = await self.user_repository.get_project_users(project_id)
         return users
 
-    async def get_task_users(
-        self,
-        task_id: int,
-    ):
+    async def get_task_users(self, task_id: int):
         task = await self.task_repository.get_by_id(task_id)
         if not task:
             raise TaskNotFound()
         users = await self.user_repository.get_task_users(task_id)
         return users
 
-    async def get_comment_user(
-        self,
-        comment_id: int,
-    ):
+    async def get_comment_user(self, comment_id: int):
         comment = await self.comment_repository.get_by_id(comment_id)
         if not comment:
             raise CommentNotFound()
@@ -84,10 +75,7 @@ class UserService:
             raise UserNotFound()
         return user
 
-    async def create(
-        self,
-        user_data: UserCreate,
-    ):
+    async def create(self, user_data: UserCreate):
         user = await self.user_repository.get_by_email(user_data.email)
         if user:
             raise UserAlreadyExists()
@@ -98,11 +86,7 @@ class UserService:
             raise UserNotCreated()
         return new_user
 
-    async def update(
-        self,
-        user_id: int,
-        user_data: UserUpdate,
-    ):
+    async def update(self, user_id: int, user_data: UserUpdate):
         user = await self.user_repository.get_by_id(user_id)
         if not user:
             raise UserNotFound()
@@ -115,10 +99,7 @@ class UserService:
             raise UserNotUpdated()
         return updated_user
 
-    async def delete(
-        self,
-        user_id: int,
-    ):
+    async def delete(self, user_id: int):
         user = await self.user_repository.get_by_id(user_id)
         if not user:
             raise UserNotFound()

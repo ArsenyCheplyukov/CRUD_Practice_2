@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
+from schemas.projects import ProjectRead
 
 
 class TaskRead(BaseModel):
@@ -17,6 +18,10 @@ class TaskRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TaskReadWithProject(TaskRead):
+    project: Annotated[ProjectRead, Field()]
 
 
 class TaskCreate(BaseModel):

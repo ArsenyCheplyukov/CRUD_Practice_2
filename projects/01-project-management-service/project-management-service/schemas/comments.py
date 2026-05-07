@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
+from schemas.tasks import TaskRead
+from schemas.users import UserRead
 
 
 class CommentRead(BaseModel):
@@ -14,6 +16,11 @@ class CommentRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class CommentReadWithDetails(CommentRead):
+    task: Annotated[TaskRead, Field()]
+    author: Annotated[UserRead, Field()]
 
 
 class CommentCreate(BaseModel):

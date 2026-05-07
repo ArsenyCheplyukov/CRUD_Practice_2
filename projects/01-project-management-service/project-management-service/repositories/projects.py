@@ -1,6 +1,7 @@
 from models import Comment, Project, Task
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 class ProjectRepository:
@@ -14,6 +15,14 @@ class ProjectRepository:
     async def get_by_id(self, project_id: int):
         project = await self.session.execute(
             select(Project).where(Project.id == project_id)
+        )
+        return project.scalar_one_or_none()
+
+    async def get_by_id_with_tasks(self, project_id: int):
+        project = await self.session.execute(
+            select(Project)
+            .options(selectinload(Project.tasks))
+            .where(Project.id == project_id)
         )
         return project.scalar_one_or_none()
 

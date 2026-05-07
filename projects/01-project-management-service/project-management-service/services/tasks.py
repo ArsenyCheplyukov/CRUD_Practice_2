@@ -39,6 +39,12 @@ class TaskService:
             raise TaskNotFound()
         return task
 
+    async def get_by_id_with_project(self, task_id: int):
+        task = await self.task_repository.get_by_id_with_project(task_id)
+        if not task:
+            raise TaskNotFound()
+        return task
+
     async def get_project_tasks(self, project_id: int):
         project = await self.project_repository.get_by_id(project_id)
         if not project:
@@ -73,11 +79,7 @@ class TaskService:
         except IntegrityError:
             raise TaskNotCreated()
 
-    async def update(
-        self,
-        task_id: int,
-        task_data: TaskCreate,
-    ):
+    async def update(self, task_id: int, task_data: TaskCreate):
         # Check if task exist, if not - raise exception
         task = await self.task_repository.get_by_id(task_id)
         if not task:

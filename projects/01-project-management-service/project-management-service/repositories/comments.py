@@ -3,6 +3,7 @@ from models.tasks import Task
 from schemas.comments import CommentCreate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 
 class CommentRepository:
@@ -16,6 +17,14 @@ class CommentRepository:
     async def get_by_id(self, comment_id: int):
         comment = await self.session.execute(
             select(Comment).where(Comment.id == comment_id)
+        )
+        return comment.scalar_one_or_none()
+
+    async def get_by_id_with_details(self, comment_id: int):
+        comment = await self.session.execute(
+            select(Comment)
+            .options(joinedload(Comment.user), joinedload(Comment.task))
+            .where(Comment.id == comment_id)
         )
         return comment.scalar_one_or_none()
 

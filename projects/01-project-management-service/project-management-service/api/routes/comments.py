@@ -13,6 +13,7 @@ from schemas.comments import (
     CommentCreate,
     CommentDelete,
     CommentRead,
+    CommentReadWithDetails,
     CommentUpdate,
 )
 from services.comments import CommentService
@@ -45,6 +46,24 @@ async def get_comment(
     service = CommentService(session)
     try:
         return await service.get_by_id(comment_id)
+    except CommentNotFound:
+        return HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found"
+        )
+
+
+@router.get(
+    "/{comment_id}",
+    response_model=CommentReadWithDetails,
+    status_code=status.HTTP_200_OK,
+)
+async def get_comment_with_details(
+    comment_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    service = CommentService(session)
+    try:
+        return await service.get_by_id_with_details(comment_id)
     except CommentNotFound:
         return HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found"

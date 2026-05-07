@@ -34,8 +34,16 @@ class CommentService:
         return await self.comment_repository.get_all()
 
     async def get_by_id(self, comment_id: int):
+        result = await self.comment_repository.get_by_id(comment_id)
+        if not result:
+            raise CommentNotFound()
+        return result
 
-        return await self.comment_repository.get_by_id(comment_id)
+    async def get_by_id_with_details(self, comment_id: int):
+        result = await self.comment_repository.get_by_id_with_details(comment_id)
+        if not result:
+            raise CommentNotFound()
+        return result
 
     async def get_task_comments(self, task_id: int):
         task = await self.task_repository.get_by_id(task_id)
